@@ -108,11 +108,7 @@ bun run build
 1. バージョンを更新
 
 ```bash
-bun run release:patch
-
-bun run release:minor
-
-bun run release:major
+bun version patch # or minor, major
 ```
 
 2. GitHub Actions が自動的にビルドとリリースを行います

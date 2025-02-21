@@ -8,9 +8,6 @@
   },
   "scripts": {
     "build": "bun build ./index.ts --compile --outfile mdfetcher",
-    "release:patch": "bun version patch",
-    "release:minor": "bun version minor",
-    "release:major": "bun version major",
     "version": "git add -A",
     "postversion": "git push && git push --tags"
   },
