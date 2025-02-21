@@ -56,7 +56,7 @@ function convertToMarkdown(article: Article, url: string): string {
     .join('\n');
 
   const markdown = turndownService.turndown(article.content);
-  return `${frontmatter}${markdown}`;
+  return `${frontmatter}\n${markdown}`;
 }
 
 function generateFilePath(url: string, baseDir: string): string {
@@ -70,6 +70,7 @@ function generateFilePath(url: string, baseDir: string): string {
   const sanitizedPath = pathname
     .replace(/\//g, '_')
     .replace(/[?#&=]/g, '-')
+    .replace(/^_/, '') // 先頭のアンダースコアを削除
     .slice(0, 200);
 
   return join(baseDir, domain, `${sanitizedPath}.md`);
