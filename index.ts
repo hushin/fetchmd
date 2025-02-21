@@ -3,16 +3,9 @@ import { program } from 'commander';
 import { JSDOM } from 'jsdom';
 import { Readability } from '@mozilla/readability';
 import TurndownService from 'turndown';
-import { mkdir, writeFile, access, readFile } from 'node:fs/promises';
+import { mkdir, writeFile, access } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { createInterface } from 'node:readline';
-import { fileURLToPath } from 'node:url';
-
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const packageJson = JSON.parse(
-  await readFile(join(__dirname, 'package.json'), 'utf-8')
-);
-const VERSION = packageJson.version;
 
 interface Article {
   title: string;
@@ -139,7 +132,7 @@ async function main() {
   program
     .name('mdfetcher')
     .description('Fetch web pages and convert them to Markdown')
-    .version(VERSION)
+    .version(require('./package.json').version)
     .argument('[url]', 'URL to fetch and convert')
     .option('-o, --output-dir <dir>', 'Output directory', process.cwd())
     .option('--overwrite', 'Overwrite existing files')
