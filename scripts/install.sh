@@ -59,13 +59,21 @@ fi
 # Make binary executable
 chmod +x "$BINARY_NAME"
 
-# Install to /usr/local/bin or ~/.local/bin depending on permissions
-if [ -w "/usr/local/bin" ]; then
+# Install to ~/.local/bin, ~/bin or /usr/local/bin depending on permissions
+if [ -d "$HOME/.local/bin" ] && [ -w "$HOME/.local/bin" ]; then
+  INSTALL_DIR="$HOME/.local/bin"
+elif [ -d "$HOME/bin" ] && [ -w "$HOME/bin" ]; then
+  INSTALL_DIR="$HOME/bin"
+elif [ -d "/usr/local/bin" ] && [ -w "/usr/local/bin" ]; then
   INSTALL_DIR="/usr/local/bin"
 else
-  INSTALL_DIR="$HOME/.local/bin"
-  mkdir -p "$INSTALL_DIR"
+  echo "❌ Cannot detect writable exec dir, requires ~/.local/bin, ~/bin or /usr/local/bin"
+  cd - > /dev/null
+  rm -rf "$TMP_DIR"
+  exit 1
 fi
+
+mkdir -p "$INSTALL_DIR"
 
 # Move binary to install directory
 mv "$BINARY_NAME" "$INSTALL_DIR/$BINARY_NAME"
