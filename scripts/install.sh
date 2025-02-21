@@ -16,7 +16,7 @@ elif [ "$OS" == "linux" ] && ([[ "$ARCH" == "arm"* ]] || [ "$ARCH" == "aarch64" 
 elif [ "$OS" == "darwin" ] && ([[ "$ARCH" == "arm"* ]] || [ "$ARCH" == "aarch64" ]); then
   ARCH="arm64"
 else
-  if [ "$OS" != "win" ]; then
+  if [ "$OS" != "windows" ]; then
     echo "❌ Unsupported architecture: $ARCH for $OS"
     exit 1
   fi
@@ -32,7 +32,7 @@ case "$OS" in
     OS="linux"
     ;;
   "windows"* | "msys"* | "cygwin"*)
-    OS="win"
+    OS="windows"
     ;;
   *)
     echo "❌ Unsupported OS: $OS"
