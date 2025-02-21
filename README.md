@@ -4,6 +4,18 @@ URL を渡して Markdown 形式に変換して保存する CLI ツール
 
 ## インストール
 
+### 方法 1: インストールスクリプトを使う（推奨）
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/hushin-sandbox/mdfetcher/main/scripts/install.sh | bash
+```
+
+### 方法 2: 手動でダウンロード
+
+[Releases](https://github.com/hushin-sandbox/mdfetcher/releases) ページから、お使いのプラットフォームに合ったバイナリをダウンロードしてください。
+
+### 方法 3: ソースからビルド
+
 ```bash
 bun install
 bun run build
