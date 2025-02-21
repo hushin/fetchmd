@@ -5,19 +5,26 @@ set -e
 # build directory
 mkdir -p dist
 
-# build for each platform
-PLATFORMS=("linux" "darwin" "win")
-ARCHS=("x64" "arm64")
+# Supported targets: bun-linux-x64, bun-linux-arm64, bun-windows-x64, bun-darwin-x64, bun-darwin-arm64
 
-for platform in "${PLATFORMS[@]}"; do
-  for arch in "${ARCHS[@]}"; do
-    echo "Building for $platform-$arch..."
-    OUTPUT="dist/mdfetcher-$platform-$arch"
-    if [ "$platform" = "win" ]; then
-      OUTPUT="$OUTPUT.exe"
-      platform="windows"
-    fi
+# Define targets
+targets=(
+  "linux-x64"
+  "linux-arm64"
+  "windows-x64"
+  "darwin-x64"
+  "darwin-arm64"
+)
 
-    bun build ./index.ts --compile --target="bun-$platform-$arch" --outfile "$OUTPUT"
-  done
+# Build for all targets
+for target in "${targets[@]}"; do
+  echo "Building for ${target}..."
+  outfile="dist/mdfetcher-${target}"
+
+  # Add .exe extension for Windows
+  if [[ $target == "windows-x64" ]]; then
+    outfile="${outfile}.exe"
+  fi
+
+  bun build ./index.ts --compile --target="bun-${target}" --outfile "${outfile}"
 done

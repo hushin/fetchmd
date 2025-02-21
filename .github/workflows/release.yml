@@ -34,6 +34,5 @@ jobs:
             dist/mdfetcher-darwin-x64
             dist/mdfetcher-darwin-arm64
             dist/mdfetcher-win-x64.exe
-            dist/mdfetcher-win-arm64.exe
             scripts/install.sh
           generate_release_notes: true

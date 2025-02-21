@@ -11,11 +11,16 @@ ARCH=$(uname -m)
 # Map architecture names
 if [ "$ARCH" == "x86_64" ]; then
   ARCH="x64"
-elif [[ "$ARCH" == "arm"* ]] || [ "$ARCH" == "aarch64" ]; then
+elif [ "$OS" == "linux" ] && ([[ "$ARCH" == "arm"* ]] || [ "$ARCH" == "aarch64" ]); then
+  ARCH="arm64"
+elif [ "$OS" == "darwin" ] && ([[ "$ARCH" == "arm"* ]] || [ "$ARCH" == "aarch64" ]); then
   ARCH="arm64"
 else
-  echo "❌ Unsupported architecture: $ARCH"
-  exit 1
+  if [ "$OS" != "win" ]; then
+    echo "❌ Unsupported architecture: $ARCH for $OS"
+    exit 1
+  fi
+  ARCH="x64"  # Windows only supports x64
 fi
 
 # Determine binary name based on OS
