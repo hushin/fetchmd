@@ -15,8 +15,9 @@ for platform in "${PLATFORMS[@]}"; do
     OUTPUT="dist/mdfetcher-$platform-$arch"
     if [ "$platform" = "win" ]; then
       OUTPUT="$OUTPUT.exe"
+      platform="windows"
     fi
 
-    BUN_TARGET="$platform-$arch" bun build ./index.ts --compile --outfile "$OUTPUT"
+    bun build ./index.ts --compile --target="bun-$platform-$arch" --outfile "$OUTPUT"
   done
 done
