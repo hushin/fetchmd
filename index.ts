@@ -69,7 +69,7 @@ function generateFilePath(url: string, baseDir: string): string {
   // Convert URL components to safe filename
   const sanitizedPath = pathname
     .replace(/\//g, '_')
-    .replace(/[?#&=]/g, '-')
+    .replace(/[?#&=.]/g, '_')
     .replace(/^_/, '') // 先頭のアンダースコアを削除
     .slice(0, 200);
 
