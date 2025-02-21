@@ -1,6 +1,6 @@
 # mdfetcher
 
-URL を渡して、Markdown 形式に変換して保存する CLI ツール
+URL を渡して Markdown 形式に変換して保存する CLI ツール
 
 ## インストール
 
