@@ -24,6 +24,8 @@ mdfetcher -o ~/documents https://example.com/article
 cat urls.txt | mdfetcher
 ```
 
+**注意**: URL の指定か標準入力のいずれかが必要です。どちらも指定がない場合はエラーになります。
+
 ### オプション
 
 - `-o, --output-dir <dir>` - 出力先ディレクトリを指定（デフォルト: カレントディレクトリ）

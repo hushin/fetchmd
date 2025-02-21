@@ -137,6 +137,11 @@ async function main() {
     .option('--overwrite', 'Overwrite existing files')
     .option('--skip', 'Skip existing files')
     .action(async (url: string | undefined, options: ProcessOptions) => {
+      if (!url && process.stdin.isTTY) {
+        console.error('Error: Please provide a URL or pipe URLs through stdin');
+        process.exit(1);
+      }
+
       if (!url) {
         // Handle stdin input
         const rl = createInterface({
