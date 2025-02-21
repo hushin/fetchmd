@@ -1,7 +1,14 @@
 {
   "name": "mdfetcher",
+  "version": "1.0.0",
   "module": "index.ts",
   "type": "module",
+  "bin": {
+    "mdfetcher": "index.ts"
+  },
+  "scripts": {
+    "build": "bun build ./index.ts --compile --outfile mdfetcher"
+  },
   "devDependencies": {
     "@types/bun": "latest",
     "@types/jsdom": "^21.1.7",
