@@ -3,5 +3,10 @@
     {
       "file": ".github/COMMIT_CONVENTION.md"
     }
+  ],
+  "github.copilot.chat.testGeneration.instructions": [
+    {
+      "file": ".github/prompts/bun-test.prompt.md"
+    }
   ]
 }
