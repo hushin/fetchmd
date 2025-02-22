@@ -7,6 +7,7 @@ import {
   afterAll,
   spyOn,
   beforeEach,
+  afterEach,
 } from 'bun:test';
 import type { Article } from './index';
 import { mkdtemp, rm } from 'node:fs/promises';
@@ -128,9 +129,12 @@ describe('CLI integration', () => {
     tempDir = await mkdtemp(join(tmpdir(), 'mdfetcher-test-'));
   });
 
-  afterAll(async () => {
-    await rm(tempDir, { recursive: true });
+  afterAll(() => {
     spyFetch.mockRestore();
+  });
+
+  afterEach(async () => {
+    await rm(tempDir, { recursive: true });
   });
 
   beforeEach(() => {
@@ -202,17 +206,47 @@ describe('CLI integration', () => {
   });
 
   test('processes URLs from stdin', async () => {
-    spyFetch.mockImplementation(mockFetchArticle);
+    // 2つのURLに対する異なるレスポンスを用意
+    spyFetch.mockImplementation((url: string) => {
+      const content = url.includes('article2')
+        ? `<!DOCTYPE html>
+          <html>
+            <head><title>Second Article</title></head>
+            <body>
+              <main>
+                <h1>Second Article Headline</h1>
+                <p>This is the second article content.</p>
+              </main>
+            </body>
+          </html>`
+        : `<!DOCTYPE html>
+          <html>
+            <head><title>Test Article</title></head>
+            <body>
+              <main>
+                <h1>Article Headline</h1>
+                <p>This is a test article content.</p>
+              </main>
+            </body>
+          </html>`;
+      return Promise.resolve(
+        new Response(content, {
+          headers: { 'Content-Type': 'text/html' },
+        })
+      );
+    });
 
-    // process.stdin.isTTY を false にモック
     const originalIsTTY = process.stdin.isTTY;
     Object.defineProperty(process.stdin, 'isTTY', {
       value: false,
       configurable: true,
     });
-    // Bun.stdin をモック
+
     const originalStdin = Bun.stdin;
-    const mockStdin = new File(['https://example.com/article\n'], 'stdin');
+    const mockStdin = new File(
+      ['https://example.com/article\nhttps://example.com/article2\n'],
+      'stdin'
+    );
     Object.defineProperty(Bun, 'stdin', {
       value: mockStdin,
       writable: true,
@@ -220,23 +254,29 @@ describe('CLI integration', () => {
 
     await program.parseAsync(['node', 'mdfetcher', '--output-dir', tempDir]);
 
-    // process.stdin.isTTY を元に戻す
+    // 元に戻す
     Object.defineProperty(process.stdin, 'isTTY', {
       value: originalIsTTY,
       configurable: true,
     });
-    // Bun.stdin を元に戻す
     Object.defineProperty(Bun, 'stdin', {
       value: originalStdin,
       writable: true,
     });
 
-    // 生成されたファイルを確認
-    const outputPath = join(tempDir, 'example.com/article.md');
-    const content = await Bun.file(outputPath).text();
+    // 両方のファイルが生成されていることを確認
+    const outputPath1 = join(tempDir, 'example.com/article.md');
+    const outputPath2 = join(tempDir, 'example.com/article2.md');
 
-    expect(content).toContain('# Article Headline');
-    expect(content).toContain('This is a test article content.');
-    expect(spyFetch).toHaveBeenCalledTimes(1);
+    const content1 = await Bun.file(outputPath1).text();
+    const content2 = await Bun.file(outputPath2).text();
+
+    // 1つ目のファイルの検証
+    expect(content1).toContain('# Article Headline');
+    expect(content1).toContain('This is a test article content.');
+
+    // 2つ目のファイルの検証
+    expect(content2).toContain('# Second Article Headline');
+    expect(content2).toContain('This is the second article content.');
   });
 });
