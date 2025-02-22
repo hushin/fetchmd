@@ -151,17 +151,23 @@ export function createProgram() {
       }
 
       if (!url) {
-        // Handle stdin input
-        const rl = createInterface({
-          input: process.stdin,
-          output: process.stdout,
-        });
+        // Handle stdin input using Bun.stdin
+        let buffer = '';
+        for await (const chunk of Bun.stdin.stream()) {
+          buffer += Buffer.from(chunk).toString();
+          const lines = buffer.split('\n');
+          buffer = lines.pop() || ''; // 最後の不完全な行を保持
 
-        for await (const line of rl) {
-          const trimmedUrl = line.trim();
-          if (trimmedUrl) {
-            await processUrl(trimmedUrl, options);
+          for (const line of lines) {
+            const trimmedUrl = line.trim();
+            if (trimmedUrl) {
+              await processUrl(trimmedUrl, options);
+            }
           }
+        }
+        // 最後の行を処理
+        if (buffer.trim()) {
+          await processUrl(buffer.trim(), options);
         }
       } else {
         await processUrl(url, options);

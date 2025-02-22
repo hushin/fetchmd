@@ -200,4 +200,43 @@ describe('CLI integration', () => {
     expect(content).toContain('This is a test article content.');
     expect(spyFetch).toHaveBeenCalledTimes(1);
   });
+
+  test('processes URLs from stdin', async () => {
+    spyFetch.mockImplementation(mockFetchArticle);
+
+    // process.stdin.isTTY を false にモック
+    const originalIsTTY = process.stdin.isTTY;
+    Object.defineProperty(process.stdin, 'isTTY', {
+      value: false,
+      configurable: true,
+    });
+    // Bun.stdin をモック
+    const originalStdin = Bun.stdin;
+    const mockStdin = new File(['https://example.com/article\n'], 'stdin');
+    Object.defineProperty(Bun, 'stdin', {
+      value: mockStdin,
+      writable: true,
+    });
+
+    await program.parseAsync(['node', 'mdfetcher', '--output-dir', tempDir]);
+
+    // process.stdin.isTTY を元に戻す
+    Object.defineProperty(process.stdin, 'isTTY', {
+      value: originalIsTTY,
+      configurable: true,
+    });
+    // Bun.stdin を元に戻す
+    Object.defineProperty(Bun, 'stdin', {
+      value: originalStdin,
+      writable: true,
+    });
+
+    // 生成されたファイルを確認
+    const outputPath = join(tempDir, 'example.com/article.md');
+    const content = await Bun.file(outputPath).text();
+
+    expect(content).toContain('# Article Headline');
+    expect(content).toContain('This is a test article content.');
+    expect(spyFetch).toHaveBeenCalledTimes(1);
+  });
 });
