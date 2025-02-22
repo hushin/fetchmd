@@ -7,7 +7,7 @@ import { program } from 'commander';
 import { JSDOM } from 'jsdom';
 import TurndownService from 'turndown';
 
-interface Article {
+export interface Article {
   title: string;
   content: string;
   textContent: string;
@@ -36,7 +36,7 @@ async function fetchAndParse(url: string): Promise<Article> {
   return article;
 }
 
-function convertToMarkdown(article: Article, url: string): string {
+export function convertToMarkdown(article: Article, url: string): string {
   const turndownService = new TurndownService({
     headingStyle: 'atx',
     codeBlockStyle: 'fenced',
@@ -61,17 +61,22 @@ function convertToMarkdown(article: Article, url: string): string {
   return `${frontmatter}\n\n${markdown}`;
 }
 
-function generateFilePath(url: string, baseDir: string): string {
+export function generateFilePath(url: string, baseDir: string): string {
   const urlObj = new URL(url);
   const domain = urlObj.hostname;
   const pathname = urlObj.pathname.endsWith('/')
     ? `${urlObj.pathname}index`
     : urlObj.pathname;
 
+  // クエリパラメータを含める
+  const query = urlObj.search
+    ? urlObj.search.slice(1).replace(/[=&]/g, '_')
+    : '';
+
   // Convert URL components to safe filename
-  const sanitizedPath = pathname
+  const sanitizedPath = `${pathname}${query ? `_${query}` : ''}`
     .replace(/\//g, '_')
-    .replace(/[?#&=.]/g, '_')
+    .replace(/[?#.]/g, '_')
     .replace(/^_/, '')
     .slice(0, 200);
 
@@ -166,4 +171,6 @@ async function main() {
   await program.parseAsync();
 }
 
-main().catch(console.error);
+if (import.meta.main) {
+  main().catch(console.error);
+}
