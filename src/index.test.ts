@@ -1,5 +1,18 @@
-import { describe, expect, setSystemTime, test } from 'bun:test';
+import {
+  describe,
+  expect,
+  setSystemTime,
+  test,
+  beforeAll,
+  afterAll,
+  spyOn,
+  beforeEach,
+} from 'bun:test';
 import type { Article } from './index';
+import { mkdtemp, rm } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { createProgram } from './index';
 
 import { convertToMarkdown, generateFilePath } from './index';
 
@@ -81,5 +94,110 @@ describe('generateFilePath', () => {
     const filePath = generateFilePath(url, baseDir);
 
     expect(filePath).toBe('/output/example.com/article_index.md');
+  });
+});
+
+describe('CLI integration', () => {
+  let tempDir: string;
+  const program = createProgram();
+
+  const mockFetchArticle: typeof fetch = async (url) => {
+    expect(url).toBe('https://example.com/article');
+    return new Response(
+      `<!DOCTYPE html>
+    <html>
+      <head>
+        <title>Test Article</title>
+      </head>
+      <body>
+        <main>
+          <h1>Article Headline</h1>
+          <p>This is a test article content.</p>
+        </main>
+      </body>
+    </html>`,
+      {
+        headers: { 'Content-Type': 'text/html' },
+      }
+    );
+  };
+
+  const spyFetch = spyOn(globalThis, 'fetch');
+
+  beforeAll(async () => {
+    tempDir = await mkdtemp(join(tmpdir(), 'mdfetcher-test-'));
+  });
+
+  afterAll(async () => {
+    await rm(tempDir, { recursive: true });
+    spyFetch.mockRestore();
+  });
+
+  beforeEach(() => {
+    spyFetch.mockReset();
+  });
+  test('fetches article and saves as markdown', async () => {
+    spyFetch.mockImplementation(mockFetchArticle);
+
+    await program.parseAsync([
+      'node', // dummy argv[0]
+      'mdfetcher', // dummy argv[1]
+      'https://example.com/article',
+      '--output-dir',
+      tempDir,
+    ]);
+
+    // Read the generated file and verify its contents
+    const outputPath = join(tempDir, 'example.com/article.md');
+    const content = await Bun.file(outputPath).text();
+
+    expect(content).toContain('# Article Headline');
+    expect(content).toContain('This is a test article content.');
+    expect(spyFetch).toHaveBeenCalledTimes(1);
+  });
+
+  test('skips when file exists and --skip option is provided', async () => {
+    spyFetch.mockImplementation(mockFetchArticle);
+
+    // Create file beforehand
+    const outputPath = join(tempDir, 'example.com/article.md');
+    await Bun.write(outputPath, 'existing content');
+
+    await program.parseAsync([
+      'node',
+      'mdfetcher',
+      'https://example.com/article',
+      '--output-dir',
+      tempDir,
+      '--skip',
+    ]);
+
+    // Verify the file was not overwritten
+    const content = await Bun.file(outputPath).text();
+    expect(content).toBe('existing content');
+    expect(spyFetch).toHaveBeenCalledTimes(0);
+  });
+
+  test('overwrites when file exists and --overwrite option is provided', async () => {
+    spyFetch.mockImplementation(mockFetchArticle);
+
+    // Create file beforehand
+    const outputPath = join(tempDir, 'example.com/article.md');
+    await Bun.write(outputPath, 'existing content');
+
+    await program.parseAsync([
+      'node',
+      'mdfetcher',
+      'https://example.com/article',
+      '--output-dir',
+      tempDir,
+      '--overwrite',
+    ]);
+
+    // Verify the file was overwritten
+    const content = await Bun.file(outputPath).text();
+    expect(content).toContain('# Article Headline');
+    expect(content).toContain('This is a test article content.');
+    expect(spyFetch).toHaveBeenCalledTimes(1);
   });
 });

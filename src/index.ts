@@ -135,8 +135,8 @@ async function processUrl(url: string, options: ProcessOptions): Promise<void> {
   }
 }
 
-async function main() {
-  program
+export function createProgram() {
+  return program
     .name('mdfetcher')
     .description('Fetch web pages and convert them to Markdown')
     .version(require('../package.json').version)
@@ -167,7 +167,10 @@ async function main() {
         await processUrl(url, options);
       }
     });
+}
 
+async function main() {
+  const program = createProgram();
   await program.parseAsync();
 }
 
