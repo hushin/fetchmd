@@ -44,11 +44,13 @@ function convertToMarkdown(article: Article, url: string): string {
 
   const frontmatter = [
     '---',
-    `title: "${article.title || '(none)'}"`,
+    `title: "${article.title?.replace(/"/g, '\\"') || '(none)'}"`,
     `url: ${url}`,
     `fetchDate: "${new Date().toISOString()}"`,
-    article.byline ? `author: "${article.byline}"` : null,
-    article.excerpt ? `description: "${article.excerpt}"` : null,
+    article.byline ? `author: "${article.byline.replace(/"/g, '\\"')}"` : null,
+    article.excerpt
+      ? `description: "${article.excerpt.replace(/"/g, '\\"')}"`
+      : null,
     '---',
     '',
   ]
@@ -56,7 +58,7 @@ function convertToMarkdown(article: Article, url: string): string {
     .join('\n');
 
   const markdown = turndownService.turndown(article.content);
-  return `${frontmatter}\n${markdown}`;
+  return `${frontmatter}\n\n${markdown}`;
 }
 
 function generateFilePath(url: string, baseDir: string): string {
@@ -103,7 +105,7 @@ async function processUrl(url: string, options: ProcessOptions): Promise<void> {
       }
       if (options.overwrite === undefined) {
         const shouldOverwrite = await askUser(
-          `File ${filePath} already exists. Overwrite?`,
+          `File ${filePath} already exists. Overwrite?`
         );
         if (!shouldOverwrite) {
           console.log('Skipping...');
