@@ -10,9 +10,13 @@
     "dev": "bun run ./src/index.ts",
     "build": "bun build ./src/index.ts --compile --outfile mdfetcher",
     "version": "git add -A",
-    "postversion": "git push && git push --tags"
+    "postversion": "git push && git push --tags",
+    "lint": "biome lint .",
+    "format": "biome format .",
+    "check": "biome check --write ."
   },
   "devDependencies": {
+    "@biomejs/biome": "^1.9.4",
     "@types/bun": "latest",
     "@types/jsdom": "^21.1.7",
     "@types/turndown": "^5.0.5"
