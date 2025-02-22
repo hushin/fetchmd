@@ -134,7 +134,7 @@ async function main() {
     .description('Fetch web pages and convert them to Markdown')
     .version(require('./package.json').version)
     .argument('[url]', 'URL to fetch and convert')
-    .option('-o, --output-dir <dir>', 'Output directory', 'current directory')
+    .option('-o, --output-dir <dir>', 'Output directory', process.cwd())
     .option('--overwrite', 'Overwrite existing files')
     .option('--skip', 'Skip existing files')
     .action(async (url: string | undefined, options: ProcessOptions) => {
