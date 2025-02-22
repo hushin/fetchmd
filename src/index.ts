@@ -4,7 +4,7 @@ import { dirname, join } from 'node:path';
 import { createInterface } from 'node:readline';
 import { Readability } from '@mozilla/readability';
 import { program } from 'commander';
-import { JSDOM } from 'jsdom';
+import { parseHTML } from 'linkedom';
 import TurndownService from 'turndown';
 
 export interface Article {
@@ -27,8 +27,8 @@ interface ProcessOptions {
 async function fetchAndParse(url: string): Promise<Article> {
   const response = await fetch(url);
   const html = await response.text();
-  const dom = new JSDOM(html, { url });
-  const reader = new Readability(dom.window.document);
+  const { document } = parseHTML(html);
+  const reader = new Readability(document);
   const article = reader.parse();
   if (!article) {
     throw new Error('Failed to parse article');
