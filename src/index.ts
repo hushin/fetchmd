@@ -1,11 +1,11 @@
 #!/usr/bin/env bun
-import { program } from 'commander';
-import { JSDOM } from 'jsdom';
-import { Readability } from '@mozilla/readability';
-import TurndownService from 'turndown';
-import { mkdir, writeFile, access } from 'node:fs/promises';
+import { access, mkdir, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { createInterface } from 'node:readline';
+import { Readability } from '@mozilla/readability';
+import { program } from 'commander';
+import { JSDOM } from 'jsdom';
+import TurndownService from 'turndown';
 
 interface Article {
   title: string;
@@ -63,7 +63,7 @@ function generateFilePath(url: string, baseDir: string): string {
   const urlObj = new URL(url);
   const domain = urlObj.hostname;
   const pathname = urlObj.pathname.endsWith('/')
-    ? urlObj.pathname + 'index'
+    ? `${urlObj.pathname}index`
     : urlObj.pathname;
 
   // Convert URL components to safe filename
@@ -103,7 +103,7 @@ async function processUrl(url: string, options: ProcessOptions): Promise<void> {
       }
       if (options.overwrite === undefined) {
         const shouldOverwrite = await askUser(
-          `File ${filePath} already exists. Overwrite?`
+          `File ${filePath} already exists. Overwrite?`,
         );
         if (!shouldOverwrite) {
           console.log('Skipping...');
