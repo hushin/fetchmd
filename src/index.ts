@@ -132,7 +132,7 @@ async function main() {
   program
     .name('mdfetcher')
     .description('Fetch web pages and convert them to Markdown')
-    .version(require('./package.json').version)
+    .version(require('../package.json').version)
     .argument('[url]', 'URL to fetch and convert')
     .option('-o, --output-dir <dir>', 'Output directory', process.cwd())
     .option('--overwrite', 'Overwrite existing files')

@@ -26,5 +26,5 @@ for target in "${targets[@]}"; do
     outfile="${outfile}.exe"
   fi
 
-  bun build ./index.ts --compile --target="bun-${target}" --outfile "${outfile}"
+  bun build ./src/index.ts --compile --target="bun-${target}" --outfile "${outfile}"
 done
