@@ -70,7 +70,7 @@ function generateFilePath(url: string, baseDir: string): string {
   const sanitizedPath = pathname
     .replace(/\//g, '_')
     .replace(/[?#&=.]/g, '_')
-    .replace(/^_/, '') // 先頭のアンダースコアを削除
+    .replace(/^_/, '')
     .slice(0, 200);
 
   return join(baseDir, domain, `${sanitizedPath}.md`);
