@@ -96,6 +96,24 @@ describe('generateFilePath', () => {
 
     expect(filePath).toBe('/output/example.com/article_index.md');
   });
+
+  test('handles URL with hash', () => {
+    const url = 'https://example.com/article#section1';
+    const baseDir = '/output';
+
+    const filePath = generateFilePath(url, baseDir);
+
+    expect(filePath).toBe('/output/example.com/article_section1.md');
+  });
+
+  test('handles URL with query parameters and hash', () => {
+    const url = 'https://example.com/article?id=123#section2';
+    const baseDir = '/output';
+
+    const filePath = generateFilePath(url, baseDir);
+
+    expect(filePath).toBe('/output/example.com/article_id_123_section2.md');
+  });
 });
 
 describe('CLI integration', () => {

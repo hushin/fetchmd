@@ -68,13 +68,14 @@ export function generateFilePath(url: string, baseDir: string): string {
     ? `${urlObj.pathname}index`
     : urlObj.pathname;
 
-  // クエリパラメータを含める
   const query = urlObj.search
     ? urlObj.search.slice(1).replace(/[=&]/g, '_')
     : '';
 
+  const hash = urlObj.hash ? `_${urlObj.hash.slice(1)}` : '';
+
   // Convert URL components to safe filename
-  const sanitizedPath = `${pathname}${query ? `_${query}` : ''}`
+  const sanitizedPath = `${pathname}${query ? `_${query}` : ''}${hash}`
     .replace(/\//g, '_')
     .replace(/[?#.]/g, '_')
     .replace(/^_/, '')
