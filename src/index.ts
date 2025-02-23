@@ -122,7 +122,7 @@ async function processUrl(url: string, options: ProcessOptions): Promise<void> {
         return;
       }
     } catch {
-      // File doesn't exist, continue
+      // File doesn't exist, continue processing
     }
 
     const article = await fetchAndParse(url);
@@ -157,7 +157,8 @@ export function createProgram() {
         for await (const chunk of Bun.stdin.stream()) {
           buffer += Buffer.from(chunk).toString();
           const lines = buffer.split('\n');
-          buffer = lines.pop() || ''; // 最後の不完全な行を保持
+          // Store the last incomplete line
+          buffer = lines.pop() || '';
 
           for (const line of lines) {
             const trimmedUrl = line.trim();
@@ -166,7 +167,7 @@ export function createProgram() {
             }
           }
         }
-        // 最後の行を処理
+        // Process the last line
         if (buffer.trim()) {
           await processUrl(buffer.trim(), options);
         }

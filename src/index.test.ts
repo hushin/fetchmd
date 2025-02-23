@@ -224,7 +224,7 @@ describe('CLI integration', () => {
   });
 
   test('processes URLs from stdin', async () => {
-    // 2つのURLに対する異なるレスポンスを用意
+    // Prepare different responses for two URLs
     spyFetch.mockImplementation((url: string) => {
       const content = url.includes('article2')
         ? `<!DOCTYPE html>
@@ -272,7 +272,7 @@ describe('CLI integration', () => {
 
     await program.parseAsync(['node', 'mdfetcher', '--output-dir', tempDir]);
 
-    // 元に戻す
+    // Restore original values
     Object.defineProperty(process.stdin, 'isTTY', {
       value: originalIsTTY,
       configurable: true,
@@ -282,18 +282,18 @@ describe('CLI integration', () => {
       writable: true,
     });
 
-    // 両方のファイルが生成されていることを確認
+    // Verify both files were generated
     const outputPath1 = join(tempDir, 'example.com/article.md');
     const outputPath2 = join(tempDir, 'example.com/article2.md');
 
     const content1 = await Bun.file(outputPath1).text();
     const content2 = await Bun.file(outputPath2).text();
 
-    // 1つ目のファイルの検証
+    // Verify first file contents
     expect(content1).toContain('# Article Headline');
     expect(content1).toContain('This is a test article content.');
 
-    // 2つ目のファイルの検証
+    // Verify second file contents
     expect(content2).toContain('# Second Article Headline');
     expect(content2).toContain('This is the second article content.');
   });
