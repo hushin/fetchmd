@@ -152,24 +152,13 @@ export function createProgram() {
       }
 
       if (!url) {
-        // Handle stdin input using Bun.stdin
-        let buffer = '';
-        for await (const chunk of Bun.stdin.stream()) {
-          buffer += Buffer.from(chunk).toString();
-          const lines = buffer.split('\n');
-          // Store the last incomplete line
-          buffer = lines.pop() || '';
-
-          for (const line of lines) {
-            const trimmedUrl = line.trim();
-            if (trimmedUrl) {
-              await processUrl(trimmedUrl, options);
-            }
+        // Handle stdin input using console AsyncIterable
+        // https://bun.sh/guides/process/stdin
+        for await (const line of console) {
+          const trimmedUrl = line.trim();
+          if (trimmedUrl) {
+            await processUrl(trimmedUrl, options);
           }
-        }
-        // Process the last line
-        if (buffer.trim()) {
-          await processUrl(buffer.trim(), options);
         }
       } else {
         await processUrl(url, options);
