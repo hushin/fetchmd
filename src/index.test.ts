@@ -225,8 +225,8 @@ describe('CLI integration', () => {
 
   test('processes URLs from stdin', async () => {
     // Prepare different responses for two URLs
-    spyFetch.mockImplementation((url: string) => {
-      const content = url.includes('article2')
+    const mockFetchArticle: typeof fetch = (url) => {
+      const content = url.toString().includes('article2')
         ? `<!DOCTYPE html>
           <html>
             <head><title>Second Article</title></head>
@@ -252,7 +252,8 @@ describe('CLI integration', () => {
           headers: { 'Content-Type': 'text/html' },
         })
       );
-    });
+    };
+    spyFetch.mockImplementation(mockFetchArticle);
 
     const originalIsTTY = process.stdin.isTTY;
     Object.defineProperty(process.stdin, 'isTTY', {
