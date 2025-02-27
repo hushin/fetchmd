@@ -16,11 +16,8 @@ elif [ "$OS" == "linux" ] && ([[ "$ARCH" == "arm"* ]] || [ "$ARCH" == "aarch64" 
 elif [ "$OS" == "darwin" ] && ([[ "$ARCH" == "arm"* ]] || [ "$ARCH" == "aarch64" ]); then
   ARCH="arm64"
 else
-  if [ "$OS" != "windows" ]; then
-    echo "❌ Unsupported architecture: $ARCH for $OS"
-    exit 1
-  fi
-  ARCH="x64"  # Windows only supports x64
+  echo "❌ Unsupported architecture: $ARCH for $OS"
+  exit 1
 fi
 
 # Determine binary name based on OS
@@ -30,9 +27,6 @@ case "$OS" in
     ;;
   "linux")
     OS="linux"
-    ;;
-  "windows"* | "msys"* | "cygwin"*)
-    OS="windows"
     ;;
   *)
     echo "❌ Unsupported OS: $OS"
@@ -49,10 +43,6 @@ cd "$TMP_DIR"
 
 echo "⬇️  Downloading ${BINARY_NAME} ${LATEST_VERSION} for ${OS}-${ARCH}..."
 DOWNLOAD_URL="https://github.com/hushin/fetchmd/releases/download/${LATEST_VERSION}/${BINARY_NAME}-${OS}-${ARCH}"
-if [ "$OS" = "win" ]; then
-  DOWNLOAD_URL="${DOWNLOAD_URL}.exe"
-fi
-
 # Download binary
 if ! curl -L -s "$DOWNLOAD_URL" -o "$BINARY_NAME"; then
   echo "❌ Failed to download from $DOWNLOAD_URL"

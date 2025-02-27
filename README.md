@@ -6,8 +6,16 @@ CLI tool that fetches a web page, extracts its main content, and saves it as Mar
 
 ### Method 1: Use the install script (recommended)
 
+#### Linux/macOS
+
 ```bash
 curl -fsSL https://raw.githubusercontent.com/hushin/fetchmd/main/scripts/install.sh | bash
+```
+
+#### Windows (PowerShell)
+
+```powershell
+irm https://raw.githubusercontent.com/hushin/fetchmd/main/scripts/install.ps1 | iex
 ```
 
 ### Method 2: Manually download the binary

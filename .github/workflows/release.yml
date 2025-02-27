@@ -52,4 +52,5 @@ jobs:
             dist/fetchmd-darwin-arm64
             dist/fetchmd-windows-x64.exe
             scripts/install.sh
+            scripts/install.ps1
           generate_release_notes: true
