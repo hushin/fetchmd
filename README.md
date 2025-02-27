@@ -1,4 +1,4 @@
-# mdfetcher
+# fetchmd
 
 CLI tool that fetches a web page, extracts its main content, and saves it as Markdown.
 
@@ -7,22 +7,22 @@ CLI tool that fetches a web page, extracts its main content, and saves it as Mar
 ### Method 1: Use the install script (recommended)
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/hushin-sandbox/mdfetcher/main/scripts/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/hushin/fetchmd/main/scripts/install.sh | bash
 ```
 
 ### Method 2: Manually download the binary
 
-[Releases](https://github.com/hushin-sandbox/mdfetcher/releases/latest) page from which you can download the binary for your platform.
+[Releases](https://github.com/hushin/fetchmd/releases/latest) page from which you can download the binary for your platform.
 
 #### Linux/macOS
 
 ```bash
 # Download (Example: for Linux x64)
-curl -L https://github.com/hushin-sandbox/mdfetcher/releases/download/v1.0.0/mdfetcher-linux-x64 -o mdfetcher
+curl -L https://github.com/hushin/fetchmd/releases/download/v1.0.0/fetchmd-linux-x64 -o fetchmd
 # Grant execution permission
-chmod +x mdfetcher
+chmod +x fetchmd
 # Move to a directory included in your PATH
-mv mdfetcher ~/.local/bin/
+mv fetchmd ~/.local/bin/
 ```
 
 #### Windows
@@ -32,7 +32,7 @@ Download the .exe file, place it in a directory included in your PATH, or run it
 ## Usage
 
 ```bash
-mdfetcher [URL] [options]
+fetchmd [URL] [options]
 ```
 
 ### Options
@@ -49,13 +49,13 @@ mdfetcher [URL] [options]
 
 ```bash
 # Process a single URL
-mdfetcher https://example.com/article
+fetchmd https://example.com/article
 
 # Specify the output directory
-mdfetcher -o ~/documents https://example.com/article
+fetchmd -o ~/documents https://example.com/article
 
 # Process multiple URLs from standard input (one URL per line)
-cat urls.txt | mdfetcher
+cat urls.txt | fetchmd
 ```
 
 ### Output format
@@ -90,8 +90,8 @@ Content...
 
 ```bash
 # Clone the repository
-git clone https://github.com/hushin-sandbox/mdfetcher.git
-cd mdfetcher
+git clone https://github.com/hushin/fetchmd.git
+cd fetchmd
 
 # Install dependencies
 bun install

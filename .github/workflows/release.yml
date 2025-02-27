@@ -46,10 +46,10 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            dist/mdfetcher-linux-x64
-            dist/mdfetcher-linux-arm64
-            dist/mdfetcher-darwin-x64
-            dist/mdfetcher-darwin-arm64
-            dist/mdfetcher-windows-x64.exe
+            dist/fetchmd-linux-x64
+            dist/fetchmd-linux-arm64
+            dist/fetchmd-darwin-x64
+            dist/fetchmd-darwin-arm64
+            dist/fetchmd-windows-x64.exe
             scripts/install.sh
           generate_release_notes: true

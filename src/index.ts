@@ -138,7 +138,7 @@ async function processUrl(url: string, options: ProcessOptions): Promise<void> {
 
 export function createProgram() {
   return program
-    .name('mdfetcher')
+    .name('fetchmd')
     .description('Fetch web pages and convert them to Markdown')
     .version(require('../package.json').version)
     .argument('[url]', 'URL to fetch and convert')

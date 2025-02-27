@@ -19,7 +19,7 @@ targets=(
 # Build for all targets
 for target in "${targets[@]}"; do
   echo "Building for ${target}..."
-  outfile="dist/mdfetcher-${target}"
+  outfile="dist/fetchmd-${target}"
 
   # Add .exe extension for Windows
   if [[ $target == "windows-x64" ]]; then

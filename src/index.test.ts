@@ -144,7 +144,7 @@ describe('CLI integration', () => {
   const spyFetch = spyOn(globalThis, 'fetch');
 
   beforeAll(async () => {
-    tempDir = await mkdtemp(join(tmpdir(), 'mdfetcher-test-'));
+    tempDir = await mkdtemp(join(tmpdir(), 'fetchmd-test-'));
   });
 
   afterAll(() => {
@@ -163,7 +163,7 @@ describe('CLI integration', () => {
 
     await program.parseAsync([
       'node', // dummy argv[0]
-      'mdfetcher', // dummy argv[1]
+      'fetchmd', // dummy argv[1]
       'https://example.com/article',
       '--output-dir',
       tempDir,
@@ -187,7 +187,7 @@ describe('CLI integration', () => {
 
     await program.parseAsync([
       'node',
-      'mdfetcher',
+      'fetchmd',
       'https://example.com/article',
       '--output-dir',
       tempDir,
@@ -209,7 +209,7 @@ describe('CLI integration', () => {
 
     await program.parseAsync([
       'node',
-      'mdfetcher',
+      'fetchmd',
       'https://example.com/article',
       '--output-dir',
       tempDir,
@@ -271,7 +271,7 @@ describe('CLI integration', () => {
       writable: true,
     });
 
-    await program.parseAsync(['node', 'mdfetcher', '--output-dir', tempDir]);
+    await program.parseAsync(['node', 'fetchmd', '--output-dir', tempDir]);
 
     // Restore original values
     Object.defineProperty(process.stdin, 'isTTY', {

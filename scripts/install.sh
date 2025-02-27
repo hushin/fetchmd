@@ -2,7 +2,7 @@
 
 set -e
 
-BINARY_NAME="mdfetcher"
+BINARY_NAME="fetchmd"
 
 # Detect OS and architecture
 OS=$(uname -s | tr '[:upper:]' '[:lower:]')
@@ -41,14 +41,14 @@ case "$OS" in
 esac
 
 # Get latest release version from GitHub API
-LATEST_VERSION=$(curl -s https://api.github.com/repos/hushin-sandbox/mdfetcher/releases/latest | grep '"tag_name":' | cut -d'"' -f4)
+LATEST_VERSION=$(curl -s https://api.github.com/repos/hushin/fetchmd/releases/latest | grep '"tag_name":' | cut -d'"' -f4)
 
 # Create temp directory
 TMP_DIR=$(mktemp -d)
 cd "$TMP_DIR"
 
 echo "⬇️  Downloading ${BINARY_NAME} ${LATEST_VERSION} for ${OS}-${ARCH}..."
-DOWNLOAD_URL="https://github.com/hushin-sandbox/mdfetcher/releases/download/${LATEST_VERSION}/${BINARY_NAME}-${OS}-${ARCH}"
+DOWNLOAD_URL="https://github.com/hushin/fetchmd/releases/download/${LATEST_VERSION}/${BINARY_NAME}-${OS}-${ARCH}"
 if [ "$OS" = "win" ]; then
   DOWNLOAD_URL="${DOWNLOAD_URL}.exe"
 fi

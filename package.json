@@ -1,14 +1,14 @@
 {
-  "name": "mdfetcher",
+  "name": "fetchmd",
   "version": "0.1.7",
   "module": "src/index.ts",
   "type": "module",
   "bin": {
-    "mdfetcher": "src/index.ts"
+    "fetchmd": "src/index.ts"
   },
   "scripts": {
     "dev": "bun run ./src/index.ts",
-    "build": "bun build ./src/index.ts --compile --outfile mdfetcher",
+    "build": "bun build ./src/index.ts --compile --outfile fetchmd",
     "test": "bun test",
     "version": "git add -A",
     "postversion": "git push && git push --tags",
