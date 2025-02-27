@@ -97,7 +97,7 @@ cd fetchmd
 bun install
 
 # Run locally
-bun run index.ts
+bun run dev
 
 # Build
 bun run build
