@@ -21,18 +21,45 @@ interface ProcessOptions {
   outputDir: string;
   overwrite: boolean | undefined;
   input: string | undefined;
+  userAgent: string;
+  timeout: number;
 }
 
-async function fetchAndParse(url: string): Promise<Article> {
-  const response = await fetch(url);
-  const html = await response.text();
-  const { document } = parseHTML(html);
-  const reader = new Readability(document);
-  const article = reader.parse();
-  if (!article) {
-    throw new Error('Failed to parse article');
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+async function fetchAndParse(
+  url: string,
+  options: ProcessOptions
+): Promise<Article> {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(
+    () => controller.abort(),
+    options.timeout * 1000
+  );
+
+  try {
+    const response = await fetch(url, {
+      headers: {
+        'User-Agent': options.userAgent,
+      },
+      signal: controller.signal,
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const html = await response.text();
+    const { document } = parseHTML(html);
+    const reader = new Readability(document);
+    const article = reader.parse();
+    if (!article) {
+      throw new Error('Failed to parse article');
+    }
+    return article;
+  } finally {
+    clearTimeout(timeoutId);
   }
-  return article;
 }
 
 export function convertToMarkdown(article: Article, url: string): string {
@@ -84,6 +111,7 @@ export function generateFilePath(url: string, baseDir: string): string {
 }
 
 async function processUrl(url: string, options: ProcessOptions): Promise<void> {
+  console.log(`Processing: ${url}`);
   try {
     const filePath = generateFilePath(url, options.outputDir);
 
@@ -98,14 +126,20 @@ async function processUrl(url: string, options: ProcessOptions): Promise<void> {
       // File doesn't exist, continue processing
     }
 
-    const article = await fetchAndParse(url);
+    const article = await fetchAndParse(url, options);
     const markdown = convertToMarkdown(article, url);
 
     await mkdir(dirname(filePath), { recursive: true });
     await writeFile(filePath, markdown, 'utf-8');
     console.log(`Successfully saved: ${filePath}`);
   } catch (error) {
-    console.error(`Error processing ${url}:`, error);
+    if (error instanceof Error) {
+      console.error(
+        `Error processing ${url}: ${error.name} - ${error.message}`
+      );
+    } else {
+      console.error(`Error processing ${url}:`, error);
+    }
   }
 }
 
@@ -120,18 +154,26 @@ async function processUrlsFromFile(
     .map((line) => line.trim());
   for (const url of urls) {
     await processUrl(url, options);
+    await sleep(500); // Add 500ms delay between requests
   }
 }
 
 export function createProgram() {
+  const version = require('../package.json').version;
   return program
     .name('fetchmd')
     .description('Fetch web pages and convert them to Markdown')
-    .version(require('../package.json').version)
+    .version(version)
     .argument('[url]', 'URL to fetch and convert')
     .option('-o, --output-dir <dir>', 'Output directory', 'ref-docs')
     .option('--overwrite', 'Overwrite existing files')
     .option('-i, --input <file>', 'Input file containing URLs (one per line)')
+    .option(
+      '--user-agent <string>',
+      'Custom User-Agent header',
+      `fetchmd/${version}`
+    )
+    .option('--timeout <number>', 'Request timeout in seconds', '30')
     .action(async (url: string | undefined, options: ProcessOptions) => {
       if (options.input) {
         await processUrlsFromFile(options.input, options);

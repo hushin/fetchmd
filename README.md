@@ -45,13 +45,15 @@ fetchmd [URL] [options]
 
 ### Options
 
-| Option                   | Description                                        |
-| ------------------------ | -------------------------------------------------- |
-| `-o, --output-dir <dir>` | Specify the output directory (default: ./ref-docs) |
-| `--overwrite`            | Overwrite existing files                           |
-| `-i, --input <file>`     | Input file containing URLs (one per line)          |
-| `-h, --help`             | Display help                                       |
-| `-v, --version`          | Display version                                    |
+| Option                   | Description                                           |
+| ------------------------ | ----------------------------------------------------- |
+| `-o, --output-dir <dir>` | Specify the output directory (default: ./ref-docs)    |
+| `--overwrite`            | Overwrite existing files                              |
+| `-i, --input <file>`     | Input file containing URLs (one per line)             |
+| `--user-agent <string>`  | Custom User-Agent header (default: fetchmd/[version]) |
+| `--timeout <number>`     | Request timeout in seconds (default: 30)              |
+| `-h, --help`             | Display help                                          |
+| `-v, --version`          | Display version                                       |
 
 ### Examples
 
