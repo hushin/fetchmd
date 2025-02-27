@@ -142,7 +142,7 @@ export function createProgram() {
     .description('Fetch web pages and convert them to Markdown')
     .version(require('../package.json').version)
     .argument('[url]', 'URL to fetch and convert')
-    .option('-o, --output-dir <dir>', 'Output directory', process.cwd())
+    .option('-o, --output-dir <dir>', 'Output directory', 'ref-docs')
     .option('--overwrite', 'Overwrite existing files')
     .option('--skip', 'Skip existing files')
     .action(async (url: string | undefined, options: ProcessOptions) => {

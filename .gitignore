@@ -176,3 +176,6 @@ dist
 
 # Built binaries
 fetchmd
+
+# Directory for output files
+ref-docs

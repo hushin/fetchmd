@@ -37,13 +37,13 @@ fetchmd [URL] [options]
 
 ### Options
 
-| Option                   | Description                                               |
-| ------------------------ | --------------------------------------------------------- |
-| `-o, --output-dir <dir>` | Specify the output directory (default: current directory) |
-| `--overwrite`            | Overwrite existing files                                  |
-| `--skip`                 | Skip existing files                                       |
-| `-h, --help`             | Display help                                              |
-| `-v, --version`          | Display version                                           |
+| Option                   | Description                                      |
+| ------------------------ | ------------------------------------------------ |
+| `-o, --output-dir <dir>` | Specify the output directory (default: ref-docs) |
+| `--overwrite`            | Overwrite existing files                         |
+| `--skip`                 | Skip existing files                              |
+| `-h, --help`             | Display help                                     |
+| `-v, --version`          | Display version                                  |
 
 ### Examples
 
