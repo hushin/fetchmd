@@ -178,28 +178,6 @@ describe('CLI integration', () => {
     expect(spyFetch).toHaveBeenCalledTimes(1);
   });
 
-  test('skips when file exists and --skip option is provided', async () => {
-    spyFetch.mockImplementation(mockFetchArticle);
-
-    // Create file beforehand
-    const outputPath = join(tempDir, 'example.com/article.md');
-    await Bun.write(outputPath, 'existing content');
-
-    await program.parseAsync([
-      'node',
-      'fetchmd',
-      'https://example.com/article',
-      '--output-dir',
-      tempDir,
-      '--skip',
-    ]);
-
-    // Verify the file was not overwritten
-    const content = await Bun.file(outputPath).text();
-    expect(content).toBe('existing content');
-    expect(spyFetch).toHaveBeenCalledTimes(0);
-  });
-
   test('overwrites when file exists and --overwrite option is provided', async () => {
     spyFetch.mockImplementation(mockFetchArticle);
 

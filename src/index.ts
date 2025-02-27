@@ -1,7 +1,6 @@
 #!/usr/bin/env bun
 import { access, mkdir, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
-import { createInterface } from 'node:readline';
 import { Readability } from '@mozilla/readability';
 import { program } from 'commander';
 import { parseHTML } from 'linkedom';
@@ -21,7 +20,6 @@ export interface Article {
 interface ProcessOptions {
   outputDir: string;
   overwrite: boolean | undefined;
-  skip: boolean | undefined;
 }
 
 async function fetchAndParse(url: string): Promise<Article> {
@@ -84,20 +82,6 @@ export function generateFilePath(url: string, baseDir: string): string {
   return join(baseDir, domain, `${sanitizedPath}.md`);
 }
 
-async function askUser(question: string): Promise<boolean> {
-  const rl = createInterface({
-    input: process.stdin,
-    output: process.stdout,
-  });
-
-  const answer = await new Promise<string>((resolve) => {
-    rl.question(`${question} (y/n): `, resolve);
-  });
-
-  rl.close();
-  return answer.toLowerCase() === 'y';
-}
-
 async function processUrl(url: string, options: ProcessOptions): Promise<void> {
   try {
     const filePath = generateFilePath(url, options.outputDir);
@@ -105,19 +89,7 @@ async function processUrl(url: string, options: ProcessOptions): Promise<void> {
     // Check if file exists
     try {
       await access(filePath);
-      if (options.skip) {
-        console.log(`Skipping existing file: ${filePath}`);
-        return;
-      }
-      if (options.overwrite === undefined) {
-        const shouldOverwrite = await askUser(
-          `File ${filePath} already exists. Overwrite?`
-        );
-        if (!shouldOverwrite) {
-          console.log('Skipping...');
-          return;
-        }
-      } else if (!options.overwrite) {
+      if (!options.overwrite) {
         console.log(`Skipping existing file: ${filePath}`);
         return;
       }
@@ -144,7 +116,6 @@ export function createProgram() {
     .argument('[url]', 'URL to fetch and convert')
     .option('-o, --output-dir <dir>', 'Output directory', 'ref-docs')
     .option('--overwrite', 'Overwrite existing files')
-    .option('--skip', 'Skip existing files')
     .action(async (url: string | undefined, options: ProcessOptions) => {
       if (!url && process.stdin.isTTY) {
         console.error('Error: Please provide a URL or pipe URLs through stdin');
