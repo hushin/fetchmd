@@ -37,12 +37,13 @@ fetchmd [URL] [options]
 
 ### Options
 
-| Option                   | Description                                      |
-| ------------------------ | ------------------------------------------------ |
-| `-o, --output-dir <dir>` | Specify the output directory (default: ref-docs) |
-| `--overwrite`            | Overwrite existing files                         |
-| `-h, --help`             | Display help                                     |
-| `-v, --version`          | Display version                                  |
+| Option                   | Description                                        |
+| ------------------------ | -------------------------------------------------- |
+| `-o, --output-dir <dir>` | Specify the output directory (default: ./ref-docs) |
+| `--overwrite`            | Overwrite existing files                           |
+| `-i, --input <file>`     | Input file containing URLs (one per line)          |
+| `-h, --help`             | Display help                                       |
+| `-v, --version`          | Display version                                    |
 
 ### Examples
 
@@ -52,6 +53,9 @@ fetchmd https://example.com/article
 
 # Specify the output directory
 fetchmd -o ~/documents https://example.com/article
+
+# Process multiple URLs from a file
+fetchmd -i urls.txt
 
 # Process multiple URLs from standard input (one URL per line)
 cat urls.txt | fetchmd

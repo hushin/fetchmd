@@ -20,6 +20,7 @@ export interface Article {
 interface ProcessOptions {
   outputDir: string;
   overwrite: boolean | undefined;
+  input: string | undefined;
 }
 
 async function fetchAndParse(url: string): Promise<Article> {
@@ -108,6 +109,20 @@ async function processUrl(url: string, options: ProcessOptions): Promise<void> {
   }
 }
 
+async function processUrlsFromFile(
+  filePath: string,
+  options: ProcessOptions
+): Promise<void> {
+  const content = await Bun.file(filePath).text();
+  const urls = content
+    .split('\n')
+    .filter(Boolean)
+    .map((line) => line.trim());
+  for (const url of urls) {
+    await processUrl(url, options);
+  }
+}
+
 export function createProgram() {
   return program
     .name('fetchmd')
@@ -116,13 +131,16 @@ export function createProgram() {
     .argument('[url]', 'URL to fetch and convert')
     .option('-o, --output-dir <dir>', 'Output directory', 'ref-docs')
     .option('--overwrite', 'Overwrite existing files')
+    .option('-i, --input <file>', 'Input file containing URLs (one per line)')
     .action(async (url: string | undefined, options: ProcessOptions) => {
-      if (!url && process.stdin.isTTY) {
-        console.error('Error: Please provide a URL or pipe URLs through stdin');
+      if (options.input) {
+        await processUrlsFromFile(options.input, options);
+      } else if (!url && process.stdin.isTTY) {
+        console.error(
+          'Error: Please provide a URL, input file, or pipe URLs through stdin'
+        );
         process.exit(1);
-      }
-
-      if (!url) {
+      } else if (!url) {
         // Handle stdin input using console AsyncIterable
         // https://bun.sh/guides/process/stdin
         for await (const line of console) {

@@ -120,24 +120,29 @@ describe('CLI integration', () => {
   let tempDir: string;
   const program = createProgram();
 
-  const mockFetchArticle: typeof fetch = async (url) => {
-    expect(url).toBe('https://example.com/article');
-    return new Response(
-      `<!DOCTYPE html>
+  const mockCommonResponse = (isSecondArticle: boolean) => `<!DOCTYPE html>
     <html>
       <head>
-        <title>Test Article</title>
+        <title>${isSecondArticle ? 'Second Article' : 'Test Article'}</title>
       </head>
       <body>
         <main>
-          <h1>Article Headline</h1>
-          <p>This is a test article content.</p>
+          <h1>${
+            isSecondArticle ? 'Second Article Headline' : 'Article Headline'
+          }</h1>
+          <p>This is ${
+            isSecondArticle ? 'the second' : 'a test'
+          } article content.</p>
         </main>
       </body>
-    </html>`,
-      {
+    </html>`;
+
+  const mockFetchArticle: typeof fetch = (url) => {
+    const isSecondArticle = url.toString().includes('article2');
+    return Promise.resolve(
+      new Response(mockCommonResponse(isSecondArticle), {
         headers: { 'Content-Type': 'text/html' },
-      }
+      })
     );
   };
 
@@ -158,6 +163,7 @@ describe('CLI integration', () => {
   beforeEach(() => {
     spyFetch.mockReset();
   });
+
   test('fetches article and saves as markdown', async () => {
     spyFetch.mockImplementation(mockFetchArticle);
 
@@ -201,36 +207,42 @@ describe('CLI integration', () => {
     expect(spyFetch).toHaveBeenCalledTimes(1);
   });
 
+  test('processes URLs from input file', async () => {
+    spyFetch.mockImplementation(mockFetchArticle);
+
+    // Create input file with URLs
+    const inputPath = join(tempDir, 'urls.txt');
+    await Bun.write(
+      inputPath,
+      'https://example.com/article\nhttps://example.com/article2\n'
+    );
+
+    await program.parseAsync([
+      'node',
+      'fetchmd',
+      '--input',
+      inputPath,
+      '--output-dir',
+      tempDir,
+    ]);
+
+    // Verify both files were generated
+    const outputPath1 = join(tempDir, 'example.com/article.md');
+    const outputPath2 = join(tempDir, 'example.com/article2.md');
+
+    const content1 = await Bun.file(outputPath1).text();
+    const content2 = await Bun.file(outputPath2).text();
+
+    // Verify first file contents
+    expect(content1).toContain('# Article Headline');
+    expect(content1).toContain('This is a test article content.');
+
+    // Verify second file contents
+    expect(content2).toContain('# Second Article Headline');
+    expect(content2).toContain('This is the second article content.');
+  });
+
   test('processes URLs from stdin', async () => {
-    // Prepare different responses for two URLs
-    const mockFetchArticle: typeof fetch = (url) => {
-      const content = url.toString().includes('article2')
-        ? `<!DOCTYPE html>
-          <html>
-            <head><title>Second Article</title></head>
-            <body>
-              <main>
-                <h1>Second Article Headline</h1>
-                <p>This is the second article content.</p>
-              </main>
-            </body>
-          </html>`
-        : `<!DOCTYPE html>
-          <html>
-            <head><title>Test Article</title></head>
-            <body>
-              <main>
-                <h1>Article Headline</h1>
-                <p>This is a test article content.</p>
-              </main>
-            </body>
-          </html>`;
-      return Promise.resolve(
-        new Response(content, {
-          headers: { 'Content-Type': 'text/html' },
-        })
-      );
-    };
     spyFetch.mockImplementation(mockFetchArticle);
 
     const originalIsTTY = process.stdin.isTTY;
