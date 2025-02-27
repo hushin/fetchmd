@@ -97,6 +97,10 @@ Content...
 
 ## Developer Information
 
+### Requirements
+
+- [Bun](https://bun.sh/) - JavaScript runtime and package manager
+
 ### Setting up the development environment
 
 ```bash
