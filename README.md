@@ -121,4 +121,4 @@ npm version patch # or minor, major
 
 ## License
 
-MIT
+MIT - see [LICENSE](LICENSE) for details.
